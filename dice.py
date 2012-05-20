@@ -29,14 +29,15 @@ def complexDice(string):
     while m:
         value = repr(m.group(m.lastindex)).strip("'")
         if m.lastindex == 3:
+            y = int(value[1:])
             if (value[0] == '+'):
-                func = lambda x: x + int(value[1:])
+                func = lambda x: x + y
             elif (value[0] == '-'):
-                func = lambda x: x - int(value[1:])
+                func = lambda x: x - y
             elif (value[0] == '*'):
-                func = lambda x: x * int(value[1:])
+                func = lambda x: x * y
             elif (value[0] == '/'):
-                func = lambda x: x / int(value[1:])
+                func = lambda x: x / y
             die['mods'].append(func)
             print die['mods'][0](1)
         elif m.lastindex == 2:
