@@ -7,7 +7,6 @@ def roll(die):
     rollDict['rolls'] = [random.randint(1, die['size'])
                          for i in range(die['count'])]
     total = sum(rollDict['rolls'])
-    print total
     for f in die['mods']:
         total = f(total)
     rollDict['total'] = total
@@ -39,7 +38,6 @@ def complexDice(string):
             elif (value[0] == '/'):
                 func = lambda x: x / y
             die['mods'].append(func)
-            print die['mods'][0](1)
         elif m.lastindex == 2:
             die['type'] = value
             nextNum = 'size'
