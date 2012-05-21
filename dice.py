@@ -1,3 +1,8 @@
+#! env python3
+# -*- coding: utf-8 -*-
+
+# Author: Avi Knoll (gz.ajknoll@gmail.com)
+
 import random
 import argparse
 import re
