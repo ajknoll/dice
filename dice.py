@@ -15,7 +15,7 @@ def roll(die):
 # Quick and dirty die string parser.
 # TODO write a proper multistage parser.
 def complexDice(string):
-    pattern = re.compile("\s*(?:(\d+)|(d)|([+\-/\*]\d+))")
+    pattern = re.compile("\s*(?:(\d+)|(d)|([+\-/\*]\s*\d+))")
     scan = pattern.scanner(string)
 
     die = dict()
@@ -43,6 +43,8 @@ def complexDice(string):
             nextNum = 'size'
         elif m.lastindex == 1:
             die[nextNum] = int(value)
+            if nextNum == 'count':
+                nextNum = 'size'
 
         m = scan.match()
 
