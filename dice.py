@@ -3,14 +3,14 @@ import argparse
 import re
 
 def roll(die):
-    rollDict = dict()
-    rollDict['rolls'] = [random.randint(1, die['size'])
-                         for i in range(die['count'])]
-    total = sum(rollDict['rolls'])
+    results = dict()
+    results['rolls'] = [random.randint(1, die['size'])
+                        for i in range(die['count'])]
+    total = sum(results['rolls'])
     for f in die['mods']:
         total = f(total)
-    rollDict['total'] = total
-    return rollDict
+    results['total'] = total
+    return results
 
 # Quick and dirty die string parser.
 # TODO write a proper multistage parser.
