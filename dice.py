@@ -28,16 +28,7 @@ def complexDice(string):
     while m:
         value = repr(m.group(m.lastindex)).strip("'")
         if m.lastindex == 3:
-            y = int(value[1:])
-            if (value[0] == '+'):
-                func = lambda x: x + y
-            elif (value[0] == '-'):
-                func = lambda x: x - y
-            elif (value[0] == '*'):
-                func = lambda x: x * y
-            elif (value[0] == '/'):
-                func = lambda x: x / y
-            die['mods'].append(func)
+            die['mods'].append(generateModFunc(value[0], int(value[1:])))
         elif m.lastindex == 2:
             die['type'] = value
             nextNum = 'size'
@@ -49,6 +40,18 @@ def complexDice(string):
         m = scan.match()
 
     return die
+
+def generateModFunc(operator, operand):
+    if (operator == '+'):
+        func = lambda x: x + operand
+    elif (operator == '-'):
+        func = lambda x: x - operand
+    elif (operator == '*'):
+        func = lambda x: x * operand
+    elif (operator == '/'):
+        func = lambda x: x / operand
+
+    return func
 
 def _main():
     parser = argparse.ArgumentParser(
