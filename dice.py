@@ -7,10 +7,8 @@ def roll(die):
     rollDict['rolls'] = [random.randint(1, die['size'])
                          for i in range(die['count'])]
     total = sum(rollDict['rolls'])
-    print total
     for f in die['mods']:
         total = f(total)
-        print total, f(1)
     rollDict['total'] = total
     return rollDict
 
