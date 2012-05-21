@@ -7,8 +7,10 @@ def roll(die):
     rollDict['rolls'] = [random.randint(1, die['size'])
                          for i in range(die['count'])]
     total = sum(rollDict['rolls'])
+    print total
     for f in die['mods']:
         total = f(total)
+        print total, f(1)
     rollDict['total'] = total
     return rollDict
 
@@ -28,16 +30,7 @@ def complexDice(string):
     while m:
         value = repr(m.group(m.lastindex)).strip("'")
         if m.lastindex == 3:
-            y = int(value[1:])
-            if (value[0] == '+'):
-                func = lambda x: x + y
-            elif (value[0] == '-'):
-                func = lambda x: x - y
-            elif (value[0] == '*'):
-                func = lambda x: x * y
-            elif (value[0] == '/'):
-                func = lambda x: x / y
-            die['mods'].append(func)
+            die['mods'].append(generateModFunc(value[0], int(value[1:])))
         elif m.lastindex == 2:
             die['type'] = value
             nextNum = 'size'
@@ -49,6 +42,18 @@ def complexDice(string):
         m = scan.match()
 
     return die
+
+def generateModFunc(operator, operand):
+    if (operator == '+'):
+        func = lambda x: x + operand
+    elif (operator == '-'):
+        func = lambda x: x - operand
+    elif (operator == '*'):
+        func = lambda x: x * operand
+    elif (operator == '/'):
+        func = lambda x: x / operand
+
+    return func
 
 def _main():
     parser = argparse.ArgumentParser(
