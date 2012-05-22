@@ -21,7 +21,7 @@ def roll(die):
 # TODO write a proper multistage parser.
 def complexDice(string):
     pattern = re.compile("\s*(?:" + 
-            "(\d+x)" +
+            "(\d+r)" +
             "|(\d+)" +
             "|(d)" + 
             "|([+\-/\*]\s*\d+)" +
