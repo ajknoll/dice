@@ -7,6 +7,12 @@ import random
 import argparse
 import re
 
+def rollComplex(die):
+    results = []
+    for i in range(die['repeat']):
+        results.append(roll(die))
+    return results
+
 def roll(die):
     results = dict()
     results['rolls'] = [random.randint(1, die['size'])
@@ -38,7 +44,6 @@ def complexDice(string):
     m = scan.match()
     while m:
         value = repr(m.group(m.lastindex)).strip("'")
-        print value
         if m.lastindex == 1:
             die['repeat'] *= int(value[:-1])
         elif m.lastindex == 4:
@@ -77,8 +82,9 @@ def _main():
             nargs = '+')
 
     args = parser.parse_args()
-    for r, die in zip(map(roll, args.dice), args.dice):
-        print die['string'], ":", r['total'], ":", r['rolls']
+    for rolls, die in zip(map(rollComplex, args.dice), args.dice):
+        for repeat in rolls:
+            print die['string'], ":", repeat['total'], ":", repeat['rolls']
         
 
 if __name__ == "__main__":
