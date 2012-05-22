@@ -20,7 +20,12 @@ def roll(die):
 # Quick and dirty die string parser.
 # TODO write a proper multistage parser.
 def complexDice(string):
-    pattern = re.compile("\s*(?:(\d+)|(d)|([+\-/\*]\s*\d+))")
+    pattern = re.compile("\s*(?:" + 
+            "(\d+)" +
+            "|(d)" + 
+            "|([+\-/\*]\s*\d+)" +
+            "|()" +
+            ")")
     scan = pattern.scanner(string)
 
     die = dict()
