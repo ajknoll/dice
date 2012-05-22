@@ -21,10 +21,10 @@ def roll(die):
 # TODO write a proper multistage parser.
 def complexDice(string):
     pattern = re.compile("\s*(?:" + 
-            "(\d+)" +
+            "(\d+x)" +
+            "|(\d+)" +
             "|(d)" + 
             "|([+\-/\*]\s*\d+)" +
-            "|()" +
             ")")
     scan = pattern.scanner(string)
 
@@ -32,17 +32,21 @@ def complexDice(string):
     die['string'] = string
     die['mods']   = []
     die['count']  = 1    # default value if none is supplied
+    die['repeat'] = 1
 
     nextNum = 'count'
     m = scan.match()
     while m:
         value = repr(m.group(m.lastindex)).strip("'")
-        if m.lastindex == 3:
+        print value
+        if m.lastindex == 1:
+            die['repeat'] *= int(value[:-1])
+        elif m.lastindex == 4:
             die['mods'].append(generateModFunc(value[0], int(value[1:])))
-        elif m.lastindex == 2:
+        elif m.lastindex == 3:
             die['type'] = value
             nextNum = 'size'
-        elif m.lastindex == 1:
+        elif m.lastindex == 2:
             die[nextNum] = int(value)
             if nextNum == 'count':
                 nextNum = 'size'
