@@ -82,10 +82,10 @@ def _main():
             nargs = '+')
 
     args = parser.parse_args()
-    for rolls, die in zip(map(rollComplex, args.dice), args.dice):
-        for repeat in rolls:
-            print die['string'], ":", repeat['total'], ":", repeat['rolls']
-        
+    for rollSet, die, sCount in zip(map(rollComplex, args.dice), args.dice, range(len(args.dice))):
+        for repeat, rCount in zip(rollSet, range(len(rollSet))):
+            print '{}.{}: {} = {} {}'.format(
+                    sCount + 1, rCount + 1,  die['string'], repeat['total'], repeat['rolls'])
 
 if __name__ == "__main__":
     _main()
