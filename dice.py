@@ -3,8 +3,9 @@
 
 # Author: Avi Knoll (gz.ajknoll@gmail.com)
 
-import random
 import argparse
+import operator
+import random
 import re
 
 def rollComplex(die):
@@ -72,6 +73,9 @@ def generateModFunc(operator, operand):
 
     return func
 
+def digitCount(x):
+    return repr(len(repr(x)))
+
 def _main():
     parser = argparse.ArgumentParser(
             description = 'Roll dice for tabletop games.')
@@ -82,9 +86,15 @@ def _main():
             nargs = '+')
 
     args = parser.parse_args()
+
+    sCountWidth = digitCount(len(args.dice))
+    rCountWidth = digitCount(max([d['repeat'] for d in args.dice]))
+    stringWidth = repr(max([len(d['string']) for d in args.dice]))
+    formatString = reduce(operator.concat, 
+            ['{:>', sCountWidth , '}.{:>', rCountWidth, '}: {:', stringWidth, '} = {} {}'])
     for rollSet, die, sCount in zip(map(rollComplex, args.dice), args.dice, range(len(args.dice))):
         for repeat, rCount in zip(rollSet, range(len(rollSet))):
-            print '{}.{}: {} = {} {}'.format(
+            print formatString.format(
                     sCount + 1, rCount + 1,  die['string'], repeat['total'], repeat['rolls'])
 
 if __name__ == "__main__":
