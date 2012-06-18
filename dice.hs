@@ -18,10 +18,9 @@ instance Show t => Show (Dice t) where
   show (Numeric c s mods) = show c ++ "d" ++ show s -- ++ show ms -- TODO work out how to show mods
 
 evalDice :: Dice t -> IO t
-evalDice (Numeric c s mods) = do
-  g <- getStdGen
-  let roll = sum (take c (randomRs (1, s) g))
-  let modified = applyMods roll mods
+evalDice d@(Numeric c s mods) = do
+  r <- roll d
+  let modified = applyMods r mods
   return modified
 
 roll :: Dice t -> IO t
