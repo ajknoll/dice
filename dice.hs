@@ -20,13 +20,13 @@ instance Show t => Show (Dice t) where
 evalDice :: Dice t -> IO t
 evalDice d@(Numeric c s mods) = do
   r <- roll d
-  let modified = applyMods r mods
-  return modified
+  let m = applyMods (sum r) mods
+  return m
 
-roll :: Dice t -> IO t
+roll :: Dice t -> IO [t]
 roll (Numeric c s mods) = do
   g <- getStdGen
-  let r = sum (take c (randomRs (1, s) g))
+  let r = take c (randomRs (1, s) g)
   return r
 
 applyMods :: t -> [Modifier t] -> t
