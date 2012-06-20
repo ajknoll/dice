@@ -2,7 +2,6 @@
 
 module Dice where
 
-import qualified Data.Text as T
 import Data.List.Split
 import System.Random (getStdGen, randomRs)
 
