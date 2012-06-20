@@ -1,5 +1,6 @@
-﻿import Dice
-import System.SimpleArgs
+﻿import System.SimpleArgs
+
+import Dice
 
 main :: IO ()
-main = getArgs >>= mapM_ (print . evalDice . parseDice . (\s -> NumericS s))
+main = getArgs >>= evalDice . parseDice . (\s -> NumericS s) >>= print
