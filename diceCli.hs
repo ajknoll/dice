@@ -1,6 +1,6 @@
-﻿import System.SimpleArgs
+﻿import System.Environment
 
 import Dice
 
 main :: IO ()
-main = getArgs >>= evalDice . parseDice . (\s -> NumericS s) >>= print
+main = getArgs >>= sequence . map (evalDice . parseDice . (\s -> NumericS s)) >>= print
