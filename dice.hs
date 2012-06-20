@@ -2,25 +2,39 @@
 
 module Dice where
 
-import System.Random
+import qualified Data.Text as T
+import Data.List.Split
+import System.Random (getStdGen, randomRs)
 import System.SimpleArgs
 import System.IO
 
+-- Constants
+-- 
+countSeparators = "dD"
+modOperators = "+-*/"
+
+-- Types
+--
 type Sides = Int
 type Count = Int
-type Modifier t = (t -> t)
+
+data Modifier t where
+  MapInt :: (Int -> Int) -> Modifier Int
 
 data Dice t where
-  Numeric :: Count -> Sides -> [Modifier Int] -> Dice Int
+  NumericD :: Count -> Sides -> [Modifier Int] -> Dice Int
+
+data DiceString t where
+  NumericS :: String -> DiceString Int
 
 instance Show t => Show (Dice t) where
-  show (Numeric c s mods) = show c ++ "d" ++ show s -- ++ show ms -- TODO work out how to show mods
+  show (NumericD c s mods) = show c ++ "d" ++ show s -- ++ show ms -- TODO work out how to show mods
 
 -- Given a Dice instance, produce the result of evaluation, including random
 -- rolls.
 -- 
 evalDice :: Dice t -> IO t
-evalDice d@(Numeric c s mods) = do
+evalDice d@(NumericD c s mods) = do
   r <- roll d
   let m = applyMods (sum r) mods
   return m
@@ -28,7 +42,7 @@ evalDice d@(Numeric c s mods) = do
 -- Given a Dice instance, produce the relevant list of random objects.
 -- 
 roll :: Dice t -> IO [t]
-roll (Numeric c s mods) = do
+roll (NumericD c s mods) = do
   g <- getStdGen
   let r = take c (randomRs (1, s) g)
   return r
@@ -36,4 +50,30 @@ roll (Numeric c s mods) = do
 -- Applies a list of Modifiers sequentially to its input.
 --
 applyMods :: t -> [Modifier t] -> t
-applyMods = foldl (\acc mod -> mod acc)
+applyMods x mods = foldl (\acc mod -> mod acc) x (map extract mods)
+  where extract (MapInt m) = m
+
+parseDice :: DiceString t -> Dice t
+parseDice (NumericS s) =
+  NumericD count sides mods
+  where 
+    splitOnD = splitOneOf countSeparators s
+    hasCount = length splitOnD > 1 && (not . null . head) splitOnD
+    count = if hasCount then (read . head) splitOnD else 1
+    splitOnOps = (split . oneOf) modOperators (last splitOnD) -- preserve the delimiters this time
+    sides = (read . head) splitOnOps
+    mods = parseMods [] (tail splitOnOps)
+
+parseMods :: [Modifier t] -> [String] -> [Modifier t]
+parseMods mods [] = mods
+parseMods mods@[MapInt _] (op:x:rest) = parseMods (mods ++ [newMod]) rest
+  where 
+    xVal = read x :: Int
+    newMod = case (op) of
+                  "+" -> MapInt (\y -> y + xVal)
+                  "-" -> MapInt (\y -> y - xVal)
+                  "*" -> MapInt (\y -> y * xVal)
+                  "/" -> MapInt (\y -> y `div` xVal)
+
+
+--main = getArgs >>= parseDice >>= map evalDice >>= print
