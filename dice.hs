@@ -5,8 +5,6 @@ module Dice where
 import qualified Data.Text as T
 import Data.List.Split
 import System.Random (getStdGen, randomRs)
-import System.SimpleArgs
-import System.IO
 
 -- Constants
 -- 
@@ -77,6 +75,3 @@ parseMods mods@(MapInt _:_) (op:x:rest) = parseMods (mods ++ [newMod]) rest
                   "/" -> MapInt (\y -> y `div` xVal)
                   otherwise -> MapInt (\x -> x)
 parseMods mods _ = mods
-
-
---main = getArgs >>= parseDice >>= map evalDice >>= print
