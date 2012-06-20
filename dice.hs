@@ -27,8 +27,9 @@ data Dice t where
 data DiceString t where
   NumericS :: String -> DiceString Int
 
+-- Does not show modifiers.
 instance Show t => Show (Dice t) where
-  show (NumericD c s mods) = show c ++ "d" ++ show s -- ++ show ms -- TODO work out how to show mods
+  show (NumericD c s mods) = show c ++ "d" ++ show s
 
 -- Given a Dice instance, produce the result of evaluation, including random
 -- rolls.
@@ -62,11 +63,11 @@ parseDice (NumericS s) =
     count = if hasCount then (read . head) splitOnD else 1
     splitOnOps = (split . oneOf) modOperators (last splitOnD) -- preserve the delimiters this time
     sides = (read . head) splitOnOps
-    mods = parseMods [] (tail splitOnOps)
+    mods = parseMods [MapInt (\x -> x)] (tail splitOnOps) -- initial mod is a hack to get correct type recognition from parseMods
 
 parseMods :: [Modifier t] -> [String] -> [Modifier t]
 parseMods mods [] = mods
-parseMods mods@[MapInt _] (op:x:rest) = parseMods (mods ++ [newMod]) rest
+parseMods mods@(MapInt _:_) (op:x:rest) = parseMods (mods ++ [newMod]) rest
   where 
     xVal = read x :: Int
     newMod = case (op) of
@@ -74,6 +75,8 @@ parseMods mods@[MapInt _] (op:x:rest) = parseMods (mods ++ [newMod]) rest
                   "-" -> MapInt (\y -> y - xVal)
                   "*" -> MapInt (\y -> y * xVal)
                   "/" -> MapInt (\y -> y `div` xVal)
+                  otherwise -> MapInt (\x -> x)
+parseMods mods _ = mods
 
 
 --main = getArgs >>= parseDice >>= map evalDice >>= print
