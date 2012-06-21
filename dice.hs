@@ -1,76 +1,52 @@
-{-# LANGUAGE GADTs #-}
-
-module Dice where
-
-import Data.List.Split
+import Text.Parsec
+import Text.Parsec.Expr
+import Text.Parsec.Char
+import Text.Parsec.Token
+import Text.Parsec.Prim
+import System.Environment
 import System.Random (getStdGen, randomRs)
 
--- Constants
--- 
-countSeparators = "dD"
-modOperators = "+-*/"
-
--- Types
+-- Parser
 --
-type Sides = Int
-type Count = Int
+--expr :: Parser Integer
+expr = buildExpressionParser table term
+     <?> "dice set"
 
-data Modifier t where
-  MapInt :: (Int -> Int) -> Modifier Int
+term = do {char '('; x <- expr; char ')'; return x}
+   <|> number
+   <?> "dice term"
 
-data Dice t where
-  NumericD :: Count -> Sides -> [Modifier Int] -> Dice Int
+count = 
+  do
+    c <- number <|> return 1
+    char 'd' <|> char 'D'
+    return c
+  <|> return 1
+  <?> "count"
 
-data DiceString t where
-  NumericS :: String -> DiceString Int
+size = number <?> "size"
 
--- Does not show modifiers.
-instance Show t => Show (Dice t) where
-  show (NumericD c s mods) = show c ++ "d" ++ show s
+table = [ [ binary "d" roll AssocLeft
+          , binary "*" (*) AssocLeft
+          , binary "/" div AssocLeft 
+          , binary "+" (+) AssocLeft
+          , binary "-" (-) AssocLeft
+          ]
+        ]
+        where
+          binary s f = Infix (do {string s; return f}) 
 
--- Given a Dice instance, produce the result of evaluation, including random
--- rolls.
+--number :: Parser Integer
+number = do {ds <- many1 digit; return (read ds)} <?> "number"
+
+-- Given a count and number of sides, produce count many random integers in the
+-- range [1, sides]
 -- 
-evalDice :: Dice t -> IO t
-evalDice d@(NumericD c s mods) = do
-  r <- roll d
-  let m = applyMods (sum r) mods
-  return m
-
--- Given a Dice instance, produce the relevant list of random objects.
--- 
-roll :: Dice t -> IO [t]
-roll (NumericD c s mods) = do
+roll :: Int -> Int -> IO Int
+roll count sides = do
   g <- getStdGen
-  let r = take c (randomRs (1, s) g)
+  let r = sum (take count (randomRs (1, sides) g))
   return r
 
--- Applies a list of Modifiers sequentially to its input.
---
-applyMods :: t -> [Modifier t] -> t
-applyMods x mods = foldl (\acc mod -> mod acc) x (map extract mods)
-  where extract (MapInt m) = m
-
-parseDice :: DiceString t -> Dice t
-parseDice (NumericS s) =
-  NumericD count sides mods
-  where 
-    splitOnD = splitOneOf countSeparators s
-    hasCount = length splitOnD > 1 && (not . null . head) splitOnD
-    count = if hasCount then (read . head) splitOnD else 1
-    splitOnOps = (split . oneOf) modOperators (last splitOnD) -- preserve the delimiters this time
-    sides = (read . head) splitOnOps
-    mods = parseMods [MapInt (\x -> x)] (tail splitOnOps) -- initial mod is a hack to get correct type recognition from parseMods
-
-parseMods :: [Modifier t] -> [String] -> [Modifier t]
-parseMods mods [] = mods
-parseMods mods@(MapInt _:_) (op:x:rest) = parseMods (mods ++ [newMod]) rest
-  where 
-    xVal = read x :: Int
-    newMod = case (op) of
-                  "+" -> MapInt (\y -> y + xVal)
-                  "-" -> MapInt (\y -> y - xVal)
-                  "*" -> MapInt (\y -> y * xVal)
-                  "/" -> MapInt (\y -> y `div` xVal)
-                  otherwise -> MapInt (\x -> x)
-parseMods mods _ = mods
+main :: IO ()
+main = getArgs >>= sequence . map (parseTest expr) >>= print
