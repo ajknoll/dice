@@ -26,7 +26,7 @@ count =
 
 size = number <?> "size"
 
-table = [ [ binary "d" roll AssocLeft
+table = [ [ binary "d" randomNumber AssocLeft
           , binary "*" (*) AssocLeft
           , binary "/" div AssocLeft 
           , binary "+" (+) AssocLeft
@@ -38,6 +38,8 @@ table = [ [ binary "d" roll AssocLeft
 
 --number :: Parser Integer
 number = do {ds <- many1 digit; return (read ds)} <?> "number"
+
+randomNumber _ _ = 6
 
 -- Given a count and number of sides, produce count many random integers in the
 -- range [1, sides]
