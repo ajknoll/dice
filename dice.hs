@@ -14,7 +14,6 @@ data Modifier where
   Mul :: Integer -> Modifier
   Div :: Integer -> Modifier
   Custom :: (Integer -> Integer) -> Modifier
-
 instance Show Modifier where
   show (Add x) = "+" ++ show x
   show (Sub x) = "-" ++ show x
@@ -23,10 +22,8 @@ instance Show Modifier where
   show (Custom _) = "?"
 
 data Dice = Dice Count Sides [Modifier]
-
 instance Show Dice where
   show (Dice c s mods) = show c ++ "d" ++ show s ++ show mods
-
 
 diceP :: Parser Dice
 diceP =
@@ -82,5 +79,10 @@ evalDice (Dice c s mods) = do
   r <- roll c s
   return $ foldr applyMod r mods
 
+errOrEval :: Either ParseError Dice -> IO String
+errOrEval (Left e)  = return $ show e
+errOrEval (Right d) = evalDice d >>= return . show
+
 main :: IO ()
-main = getArgs >>= mapM (parseTest diceP) >>= print
+--main = getArgs >>= mapM (parseTest diceP) >>= print
+main = getArgs >>= mapM (errOrEval . parse "" diceP) >>= print
