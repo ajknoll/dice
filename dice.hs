@@ -51,5 +51,10 @@ roll c s = do
   let r = sum (take (fromIntegral c) (randomRs (1, s) g))
   return r
 
+evalDice :: Dice -> IO Integer
+evalDice (Dice c s mods) = do
+  r <- roll c s
+  return $ foldr ($) r mods
+
 --main :: IO ()
 --main = getArgs >>= sequence . map (parseTest expr) >>= print
