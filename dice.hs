@@ -68,10 +68,10 @@ roll c s = do
   return r
 
 applyMod :: Modifier -> Integer -> Integer
-applyMod (Add x) i = x + i
-applyMod (Sub x) i = x - i
-applyMod (Mul x) i = x * i
-applyMod (Div x) i = x `div` i
+applyMod (Add x) i = i + x
+applyMod (Sub x) i = i - x
+applyMod (Mul x) i = i * x
+applyMod (Div x) i = i `div` x
 applyMod (Custom f) i = f i
 
 evalDice :: Dice -> IO Integer
