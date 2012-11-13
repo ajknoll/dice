@@ -79,10 +79,10 @@ evalDice (Dice c s mods) = do
   r <- roll c s
   return $ foldr applyMod r mods
 
-errOrEval :: Either ParseError Dice -> IO String
-errOrEval (Left e)  = return $ show e
-errOrEval (Right d) = evalDice d >>= return . show
+errOrEval :: Either ParseError Dice -> IO ()
+errOrEval (Left e)  = print e
+errOrEval (Right d) = evalDice d >>= print
 
 main :: IO ()
 --main = getArgs >>= mapM (parseTest diceP) >>= print
-main = getArgs >>= mapM (errOrEval . parse "" diceP) >>= print
+main = getArgs >>= mapM_ (errOrEval . parse diceP "")
