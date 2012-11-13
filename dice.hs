@@ -1,50 +1,48 @@
 import Text.Parsec
-import Text.Parsec.Expr
-import Text.Parsec.Char
-import Text.Parsec.Token
-import Text.Parsec.Prim
+import Text.Parsec.String
 import System.Environment
 import System.Random (getStdGen, randomRs)
 
--- Parser
---
---expr :: Parser Integer
-expr = buildExpressionParser table term
-     <?> "dice set"
+type Count = Integer
+type Sides = Integer
+type Modifier = (Integer -> Integer)
+data Dice = Dice Count Sides [Modifier]
 
-term = do {char '('; x <- expr; char ')'; return x}
-   <|> number
-   <?> "dice term"
-
-count = 
+diceP :: Parser Dice
+diceP =
   do
-    c <- number <|> return 1
-    char 'd' <|> char 'D'
-    return c
+
+rollP :: Parser (Integer, Integer)
+rollP = 
+  do
+    count <- intP <|> return 1
+    oneOf "dD"
+    size  <- intP
+    return (count, size) 
   <|> return 1
-  <?> "count"
+  <?> "dice"
 
-size = number <?> "size"
+operationP :: Parser (Integer -> Integer)
+operationP =
+  do
+    op <- oneOf "+-*/"
+    n  <- intP
+    return $ case op of
+                  '+' -> (+)
+                  '-' -> (-)
+                  '*' -> (-)
+                  '/' -> (-)
+                  _   -> id
+             $ n
+  <?> "operation"
 
-table = [ [ binary "d" randomNumber AssocLeft
-          , binary "*" (*) AssocLeft
-          , binary "/" div AssocLeft 
-          , binary "+" (+) AssocLeft
-          , binary "-" (-) AssocLeft
-          ]
-        ]
-        where
-          binary s f = Infix (do {string s; return f}) 
-
---number :: Parser Integer
-number = do {ds <- many1 digit; return (read ds)} <?> "number"
-
-randomNumber _ _ = 6
+intP :: Parser Integer
+intP = do {ds <- many1 digit; return (read ds)} <?> "integer"
 
 -- Given a count and number of sides, produce count many random integers in the
 -- range [1, sides]
 -- 
-roll :: Int -> Int -> IO Int
+roll :: Integer -> Integer -> IO Integer
 roll count sides = do
   g <- getStdGen
   let r = sum (take count (randomRs (1, sides) g))
