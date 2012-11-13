@@ -11,19 +11,22 @@ data Dice = Dice Count Sides [Modifier]
 diceP :: Parser Dice
 diceP =
   do
+    (c, s) <- rollP
+    mods <- many modifierP
+    return $ Dice c s mods
+  <?> "dice"
 
 rollP :: Parser (Integer, Integer)
 rollP = 
   do
-    count <- intP <|> return 1
+    c <- intP <|> return 1
     oneOf "dD"
-    size  <- intP
-    return (count, size) 
-  <|> return 1
-  <?> "dice"
+    s <- intP
+    return (c, s) 
+  <?> "roll"
 
-operationP :: Parser (Integer -> Integer)
-operationP =
+modifierP :: Parser (Integer -> Integer)
+modifierP =
   do
     op <- oneOf "+-*/"
     n  <- intP
@@ -32,9 +35,9 @@ operationP =
                   '-' -> (-)
                   '*' -> (-)
                   '/' -> (-)
-                  _   -> id
+                  _   -> (\_ y -> y)
              $ n
-  <?> "operation"
+  <?> "modifier"
 
 intP :: Parser Integer
 intP = do {ds <- many1 digit; return (read ds)} <?> "integer"
@@ -43,10 +46,10 @@ intP = do {ds <- many1 digit; return (read ds)} <?> "integer"
 -- range [1, sides]
 -- 
 roll :: Integer -> Integer -> IO Integer
-roll count sides = do
+roll c s = do
   g <- getStdGen
-  let r = sum (take count (randomRs (1, sides) g))
+  let r = sum (take (fromIntegral c) (randomRs (1, s) g))
   return r
 
-main :: IO ()
-main = getArgs >>= sequence . map (parseTest expr) >>= print
+--main :: IO ()
+--main = getArgs >>= sequence . map (parseTest expr) >>= print
