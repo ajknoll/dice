@@ -9,5 +9,5 @@ class Dice extends RegexParsers {
     ( (opt(natural) ^^ {o : Option[Int] => o.getOrElse {_ : Int => 1}})
     ~ ("d" | "D") 
     ~ natural
-    ) ^^ {(count : Int, _ : Any, sides : Int) => (count, sides)}
+    ) ^^ {(count : Int, _ : String, sides : Int) => (count, sides)}
 }
