@@ -14,8 +14,7 @@ class Dice extends RegexParsers {
   def modifier : Parser[(Int => Int)] =
     (
       (("+" | "-" | "*" | "/") ~ natural)
-      ^^ {
-           case ("+", y) => {x : Int => x + y}
+      ^^ { case ("+", y) => {x : Int => x + y}
          }
     )
 }
