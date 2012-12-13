@@ -8,7 +8,7 @@ class Dice extends RegexParsers {
     case None    => 1
   }
 
-  def dice : Parser[(Int, Int) ~ List[Int => Int]] =
+  def diceRoll : Parser[(Int, Int) ~ List[Int => Int]] =
     ( roll
     ~ (modifier*)
     )
@@ -31,10 +31,10 @@ class Dice extends RegexParsers {
        }
    )
 
-  def evaluate (parsed : Parser[(Int, Int) ~ List[Int => Int]]) : Int =
+  def evaluate (dice : (Int, Int) ~ List[Int => Int]) : Int =
   { val rand = Random
-    parsed match { case (count, sides) ~ mods =>
-      val results = for (_ <- 1 to count) yield (rand (nextInt sides) + 1)
+    dice match { case (count, sides) ~ mods =>
+      val results = for (_ <- 1 to count) yield (rand.nextInt sides + 1)
     }
   }
 }
@@ -42,7 +42,7 @@ class Dice extends RegexParsers {
 object ParseDice extends Dice {
   def main (args : Array[String]) {
     for (a <- args) {
-      val parsed = parseAll(dice, a)
+      val parsed = parseAll(diceRoll, a)
       println(parsed)
     }
   }
