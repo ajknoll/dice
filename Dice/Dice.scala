@@ -31,11 +31,11 @@ class Dice extends RegexParsers {
          }
     )
 
-  def evaluate (dice : (Int, Int) ~ List[Int => Int]) : Int =
+  def evaluate (dice : (Int, Int) ~ List[Int => Int]) : (Int, List[Int]) =
     { val rand = Random
       dice match { case (count, sides) ~ mods =>
         val results = for (_ <- 1 to count) yield (rand.nextInt(sides) + 1)
-        (results.sum /: mods) ((acc, m) => m(acc))
+        ((results.sum /: mods) ((acc, m) => m(acc)), results.toList)
       }
     }
 }
@@ -44,7 +44,10 @@ object ParseDice extends Dice {
   def main (args : Array[String]) {
     for (a <- args) {
       parseAll(diceRoll, a) match {
-        case Success(r, _) => println(evaluate(r).toString ++ " [" ++ a ++ "]")
+        case Success(r, _) => {
+          val (outcome, rolls) = evaluate(r)
+          println(outcome.toString ++ " [" ++ rolls.toString ++ "] (" ++ a ++ ")")
+        }
         case _ => println("parser failure")
       }
     }
