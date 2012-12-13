@@ -4,9 +4,9 @@ import scala.util.Random
 class Dice extends RegexParsers {
   val natural : Parser[Int] = regex("""\d+""".r) ^^ {s => s.toInt}
   def getOr1 (o : Option[Int]) : Int = o match {
-    case Some(i) => i
-    case None    => 1
-  }
+      case Some(i) => i
+      case None    => 1
+    }
 
   def diceRoll : Parser[(Int, Int) ~ List[Int => Int]] =
     ( roll
@@ -23,21 +23,21 @@ class Dice extends RegexParsers {
     opt(natural) ^^ {o : Option[Int] => getOr1(o)}
 
   def modifier : Parser[(Int => Int)] =
-  ( (("+" | "-" | "*" | "/") ~ natural)
-    ^^ { case ("+" ~ y) => {x : Int => x + y}
-         case ("-" ~ y) => {x : Int => x - y}
-         case ("*" ~ y) => {x : Int => x * y}
-         case ("/" ~ y) => {x : Int => x / y}
-       }
-   )
+    ( (("+" | "-" | "*" | "/") ~ natural)
+      ^^ { case ("+" ~ y) => {x : Int => x + y}
+           case ("-" ~ y) => {x : Int => x - y}
+           case ("*" ~ y) => {x : Int => x * y}
+           case ("/" ~ y) => {x : Int => x / y}
+         }
+    )
 
   def evaluate (dice : (Int, Int) ~ List[Int => Int]) : Int =
-  { val rand = Random
-    dice match { case (count, sides) ~ mods =>
-      val results = for (_ <- 1 to count) yield (rand.nextInt(sides) + 1)
-      (results.sum /: mods) ((acc, m) => m(acc))
+    { val rand = Random
+      dice match { case (count, sides) ~ mods =>
+        val results = for (_ <- 1 to count) yield (rand.nextInt(sides) + 1)
+        (results.sum /: mods) ((acc, m) => m(acc))
+      }
     }
-  }
 }
 
 object ParseDice extends Dice {
