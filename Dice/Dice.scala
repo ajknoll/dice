@@ -13,6 +13,9 @@ class Dice extends RegexParsers {
     (
       (("+" | "-" | "*" | "/") ~ natural)
       ^^ { case ("+", y) => {x : Int => x + y}
+           case ("-", y) => {x : Int => x - y}
+           case ("*", y) => {x : Int => x * y}
+           case ("/", y) => {x : Int => x / y}
          }
     )
 }
