@@ -34,7 +34,8 @@ class Dice extends RegexParsers {
   def evaluate (dice : (Int, Int) ~ List[Int => Int]) : Int =
   { val rand = Random
     dice match { case (count, sides) ~ mods =>
-      val results = for (_ <- 1 to count) yield (rand.nextInt sides + 1)
+      val results = for (_ <- 1 to count) yield (rand.nextInt(sides) + 1)
+      results.sum
     }
   }
 }
