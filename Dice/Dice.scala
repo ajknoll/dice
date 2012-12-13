@@ -1,4 +1,5 @@
 import scala.util.parsing.combinator._
+import scala.util.Random
 
 class Dice extends RegexParsers {
   val natural : Parser[Int] = regex("""\d+""".r) ^^ {s => s.toInt}
@@ -18,18 +19,24 @@ class Dice extends RegexParsers {
     ~ natural
     ) ^^ {case (count: Int) ~ _ ~ (sides : Int) => (count, sides)}
 
-  def repeats : Parser[Int] =
+  def repeats: Parser[Int] =
     opt(natural) ^^ {o : Option[Int] => getOr1(o)}
 
   def modifier : Parser[(Int => Int)] =
-    (
-      (("+" | "-" | "*" | "/") ~ natural)
-      ^^ { case ("+" ~ y) => {x : Int => x + y}
-           case ("-" ~ y) => {x : Int => x - y}
-           case ("*" ~ y) => {x : Int => x * y}
-           case ("/" ~ y) => {x : Int => x / y}
-         }
-    )
+  ( (("+" | "-" | "*" | "/") ~ natural)
+    ^^ { case ("+" ~ y) => {x : Int => x + y}
+         case ("-" ~ y) => {x : Int => x - y}
+         case ("*" ~ y) => {x : Int => x * y}
+         case ("/" ~ y) => {x : Int => x / y}
+       }
+   )
+
+  def evaluate (parsed : Parser[(Int, Int) ~ List[Int => Int]]) : Int =
+  { val rand = Random
+    parsed match { case (count, sides) ~ mods =>
+      val results = for (_ <- 1 to count) yield (rand (nextInt sides) + 1)
+    }
+  }
 }
 
 object ParseDice extends Dice {
