@@ -44,10 +44,9 @@ object ParseDice extends Dice {
   def main (args : Array[String]) {
     for (a <- args) {
       parseAll(diceRoll, a) match {
-        case Success(r, _) => println(evaluate(r))
+        case Success(r, _) => println(evaluate(r).toString ++ " [" ++ a ++ "]")
         case _ => println("parser failure")
       }
-      
     }
   }
 }
