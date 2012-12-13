@@ -35,7 +35,7 @@ class Dice extends RegexParsers {
   { val rand = Random
     dice match { case (count, sides) ~ mods =>
       val results = for (_ <- 1 to count) yield (rand.nextInt(sides) + 1)
-      results.sum
+      (results.sum /: mods) ((acc, m) => m(acc))
     }
   }
 }
@@ -43,8 +43,11 @@ class Dice extends RegexParsers {
 object ParseDice extends Dice {
   def main (args : Array[String]) {
     for (a <- args) {
-      val parsed = parseAll(diceRoll, a)
-      println(parsed)
+      parseAll(diceRoll, a) match {
+        case Success(r, _) => println(evaluate(r))
+        case _ => println("parser failure")
+      }
+      
     }
   }
 }
