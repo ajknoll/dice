@@ -7,11 +7,15 @@ class Dice extends RegexParsers {
     case None    => 1
   }
 
+  def dice : Parser[(Int, Int) ~ List[Int => Int]] =
+    ( roll
+    ~ (modifier*)
+    )
+
   def roll : Parser[(Int, Int)] =
     ( (opt(natural) ^^ {o : Option[Int] => getOr1(o)})
     ~ ("d" | "D")
     ~ natural
-    //) ^^ {(count : Int, _ : String, sides : Int) => (count, sides)}
     ) ^^ {case (count: Int) ~ _ ~ (sides : Int) => (count, sides)}
 
   def repeats : Parser[Int] =
@@ -30,8 +34,9 @@ class Dice extends RegexParsers {
 
 object ParseDice extends Dice {
   def main (args : Array[String]) {
-    for (dice <- args) {
-      val parsed = parseAll(roll, dice)
+    for (a <- args) {
+      val parsed = parseAll(dice, a)
+      println(parsed)
     }
   }
 }
