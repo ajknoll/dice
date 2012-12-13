@@ -1,6 +1,4 @@
 import scala.util.parsing.combinator._
-import scala.Option._
-
 
 class Dice extends RegexParsers {
   val natural : Parser[Int] = regex("""\d+""".r) ^^ {s => s.toInt}
