@@ -41,13 +41,14 @@ class Dice extends RegexParsers {
 
 object ParseDice extends Dice {
   def main (args : Array[String]) {
-    for (a <- args; i <- Iterator.range(1, args.length)) {
+    println(args.length.toString)
+    for ((a, i) <- args.view.zipWithIndex) {
       parseAll(diceRoll, a) match {
         case Success(r, _) => {
           val repeats = r._1._1
-          for (j <- Iterator.range(0, repeats)) {
+          for (j <- 0 until repeats) {
             val (outcome, rolls) = evaluate (r._1._2._1) (r._1._2._2) (r._2)
-            println(i.toString ++ ": "
+            println(i.toString ++ "." ++ j.toString ++ ": "
                  ++ outcome.toString
                  ++ " [" ++ rolls.toString 
                  ++ "] (" ++ a ++ ")")
