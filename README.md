@@ -6,7 +6,7 @@ You can roll multiple pools of dice at once, with arbitrarily long strings of mo
 ## Versions
 
 I've been using this project to play around with languages. As such, there are now
-version of approximately the same application in Python, Haskell and Scala.
+versions of approximately the same application in Python, Haskell and Scala.
 
 For ease of use, `python dice.py` is the simplest version to run at a reasonable speed.
 To get a faster version with equally pretty printing, the scala version can be compiled
