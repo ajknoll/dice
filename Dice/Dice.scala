@@ -9,7 +9,7 @@ class Dice extends RegexParsers {
     }
 
   def diceRoll : Parser[Int ~ (Int, Int) ~ List[Int => Int]] =
-    ( repeats
+    ( ((repeats?) ^^ {o => getOr1(o)})
     ~ roll
     ~ (modifier*)
     )
@@ -21,7 +21,7 @@ class Dice extends RegexParsers {
     ) ^^ {case (count: Int) ~ _ ~ (sides : Int) => (count, sides)}
 
   def repeats: Parser[Int] =
-    opt(natural) ^^ {o : Option[Int] => getOr1(o)}
+    natural <~ "r"
 
   def modifier : Parser[(Int => Int)] =
     ( (("+" | "-" | "*" | "/") ~ natural)
@@ -45,11 +45,13 @@ object ParseDice extends Dice {
       parseAll(diceRoll, a) match {
         case Success(r, _) => {
           val repeats = r._1._1
-          val (outcome, rolls) = evaluate (r._1._2._1) (r._1._2._2) (r._2)
-          println(i.toString ++ ": "
-               ++ outcome.toString
-               ++ " [" ++ rolls.toString 
-               ++ "] (" ++ a ++ ")")
+          for (j <- Iterator.range(0, repeats)) {
+            val (outcome, rolls) = evaluate (r._1._2._1) (r._1._2._2) (r._2)
+            println(i.toString ++ ": "
+                 ++ outcome.toString
+                 ++ " [" ++ rolls.toString 
+                 ++ "] (" ++ a ++ ")")
+          }
         }
         case _ => println("parser failure")
       }
