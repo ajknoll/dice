@@ -15,7 +15,7 @@ class Dice extends RegexParsers {
     )
 
   def roll : Parser[(Int, Int)] =
-    ( (opt(natural) ^^ {o : Option[Int] => getOr1(o)})
+    ( ((natural?) ^^ {o => getOr1(o)})
     ~ ("d" | "D")
     ~ natural
     ) ^^ {case (count: Int) ~ _ ~ (sides : Int) => (count, sides)}
