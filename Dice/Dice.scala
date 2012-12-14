@@ -61,6 +61,7 @@ object ParseDice extends Dice {
               print(padLeft (r.toString) (rollLength))
             }
             print("] (" ++ a ++ ")")
+            println("")
           }
         }
         case _ => println("parser failure")
