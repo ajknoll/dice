@@ -40,6 +40,8 @@ class Dice extends RegexParsers {
 }
 
 object ParseDice extends Dice {
+  def padLeft (s : String) (to : Int) : String = s.reverse.padTo(i, ' ').reverse
+
   def main (args : Array[String]) {
     for ((a, i) <- args.view.zipWithIndex) {
       parseAll(diceRoll, a) match {
@@ -47,10 +49,17 @@ object ParseDice extends Dice {
           val (repeats, count, sides, mods) = (r._1._1, r._1._2._1, r._1._2._2, r._2)
           for (j <- 0 until repeats) {
             val (outcome, rolls) = evaluate (count) (sides) (mods)
-            println(i.toString ++ "." ++ j.toString ++ ": "
-                 ++ outcome.toString
-                 ++ " [" ++ rolls.toString 
-                 ++ "] (" ++ a ++ ")")
+            val repeatLength = repeats.toString.length
+            val outcomeLength = (sides * count).toString.length
+            val rollLength = sides.toString.length
+            print(padLeft (i.toString. ++ "." ++ j.toString ++ ": ") 
+                          (indexLength + repeatLength + 3))
+            print(padLeft (outcome.toString) (outcomeLength))
+            print(" [")
+            for ((r, i) <- rolls.view.zipWithIndex) {
+              print(padLeft (r.toString) (rollLength))
+            }
+            print("] (" ++ a ++ ")")
           }
         }
         case _ => println("parser failure")
