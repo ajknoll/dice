@@ -41,7 +41,6 @@ class Dice extends RegexParsers {
 
 object ParseDice extends Dice {
   def main (args : Array[String]) {
-    println(args.length.toString)
     for ((a, i) <- args.view.zipWithIndex) {
       parseAll(diceRoll, a) match {
         case Success(r, _) => {
