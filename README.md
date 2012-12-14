@@ -15,7 +15,7 @@ with `scalac Dice.scala` (from inside the `Dice` directory) and run with `scala 
 The Haskell version can be compiled with `ghc dice.hs` and run as `./dice`, but the
 output is less complete.
 
-## Examples:
+## Examples
 
     python dice.py 1d6    # or scala Dice ...
                ... 1d20+14 1d8-1
