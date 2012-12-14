@@ -40,9 +40,10 @@ class Dice extends RegexParsers {
 }
 
 object ParseDice extends Dice {
-  def padLeft (s : String) (to : Int) : String = s.reverse.padTo(i, ' ').reverse
+  def padLeft (s : String) (to : Int) : String = s.reverse.padTo(to, ' ').reverse
 
   def main (args : Array[String]) {
+    val indexLength = args.length.toString.length
     for ((a, i) <- args.view.zipWithIndex) {
       parseAll(diceRoll, a) match {
         case Success(r, _) => {
@@ -52,7 +53,7 @@ object ParseDice extends Dice {
             val repeatLength = repeats.toString.length
             val outcomeLength = (sides * count).toString.length
             val rollLength = sides.toString.length
-            print(padLeft (i.toString. ++ "." ++ j.toString ++ ": ") 
+            print(padLeft (i.toString ++ "." ++ j.toString ++ ": ") 
                           (indexLength + repeatLength + 3))
             print(padLeft (outcome.toString) (outcomeLength))
             print(" [")
