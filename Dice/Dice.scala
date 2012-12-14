@@ -1,7 +1,7 @@
 import scala.util.parsing.combinator._
 import scala.util.Random
 
-class Dice extends RegexParsers {
+class DiceParser extends RegexParsers {
   val natural : Parser[Int] = regex("""\d+""".r) ^^ {s => s.toInt}
   def getOr1 (o : Option[Int]) : Int = o match {
       case Some(i) => i
@@ -39,7 +39,7 @@ class Dice extends RegexParsers {
     }
 }
 
-object ParseDice extends Dice {
+object Dice extends DiceParser {
   def padLeft (s : String) (to : Int) : String = s.reverse.padTo(to, ' ').reverse
 
   def main (args : Array[String]) {
