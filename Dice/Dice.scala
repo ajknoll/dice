@@ -44,9 +44,9 @@ object ParseDice extends Dice {
     for ((a, i) <- args.view.zipWithIndex) {
       parseAll(diceRoll, a) match {
         case Success(r, _) => {
-          val repeats = r._1._1
+          val (repeats, count, sides, mods) = (r._1._1, r._1._2._1, r._1._2._2, r._2)
           for (j <- 0 until repeats) {
-            val (outcome, rolls) = evaluate (r._1._2._1) (r._1._2._2) (r._2)
+            val (outcome, rolls) = evaluate (count) (sides) (mods)
             println(i.toString ++ "." ++ j.toString ++ ": "
                  ++ outcome.toString
                  ++ " [" ++ rolls.toString 
