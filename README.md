@@ -22,5 +22,3 @@ output is less complete.
                ... 1d3+2+4-3+1
                ... 1d12*2
                ... 4r4d10
-
-Seriously, give that last one a try ;)
